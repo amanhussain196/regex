@@ -1,0 +1,128 @@
+import java.util.Scanner;
+
+public class ComprehensiveEmailValidator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Input for email address
+        System.out.print("Enter an email address: ");
+        String email = scanner.nextLine();
+        
+        // Validate the email
+        boolean isValid = validateEmail(email);
+        System.out.println("Email Valid: " + isValid);
+
+        scanner.close();
+    }
+
+    // Method to validate email without regex
+    private static boolean validateEmail(String email) {
+        // Check for null or empty string
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+
+        // Check for valid length
+        if (email.length() > 254) {
+            return false; // Maximum length of an email address
+        }
+
+        // Check for the presence of exactly one '@' character
+        int atPosition = email.indexOf('@');
+        if (atPosition <= 0 || atPosition != email.lastIndexOf('@')) {
+            return false; // Must have one '@' and it shouldn't be the first character
+        }
+
+        // Extract the local part and domain
+        String localPart = email.substring(0, atPosition);
+        String domainPart = email.substring(atPosition + 1);
+
+        // Validate local part
+        if (!isValidLocalPart(localPart)) {
+            return false; // Local part has invalid characters
+        }
+
+        // Check for a period '.' in the domain
+        int dotPosition = domainPart.indexOf('.');
+        if (dotPosition <= 0 || dotPosition == domainPart.length() - 1) {
+            return false; // Must have a dot in the domain and not be the last character
+        }
+
+        // Validate domain part
+        String topLevelDomain = domainPart.substring(dotPosition + 1);
+        if (!isValidDomainPart(domainPart) || !isValidTopLevelDomain(topLevelDomain)) {
+            return false; // Domain part is invalid or TLD is not valid
+        }
+
+        return true; // All checks passed
+    }
+
+    // Validate local part of the email
+    private static boolean isValidLocalPart(String localPart) {
+        // Check that local part does not exceed 64 characters
+        if (localPart.length() > 64) {
+            return false; // Local part maximum length
+        }
+
+        // Valid characters in local part
+        for (char c : localPart.toCharArray()) {
+            if (!(Character.isLetterOrDigit(c) || c == '.' || c == '_' || c == '-' || c == '+')) {
+                return false; // Invalid character found
+            }
+        }
+
+        return true; // Local part is valid
+    }
+
+    // Validate domain part of the email
+    private static boolean isValidDomainPart(String domainPart) {
+        // Split the domain by dots
+        String[] domainComponents = domainPart.split("\\.");
+        if (domainComponents.length < 2) {
+            return false; // Must have at least one dot in the domain
+        }
+
+        for (String component : domainComponents) {
+            if (!isValidDomainComponent(component)) {
+                return false; // Invalid domain component
+            }
+        }
+
+        return true; // Domain part is valid
+    }
+
+    // Check if a domain component is valid
+    private static boolean isValidDomainComponent(String component) {
+        // Check that the component is not empty and doesn't exceed 63 characters
+        if (component.isEmpty() || component.length() > 63) {
+            return false; // Invalid component length
+        }
+
+        // Valid characters in domain component
+        for (char c : component.toCharArray()) {
+            if (!(Character.isLetterOrDigit(c) || c == '-')) {
+                return false; // Invalid character found
+            }
+        }
+
+        // Domain components must not start or end with a hyphen
+        return !(component.startsWith("-") || component.endsWith("-"));
+    }
+
+    // Validate top-level domain (TLD)
+    private static boolean isValidTopLevelDomain(String tld) {
+        // Check TLD length
+        if (tld.length() < 2 || tld.length() > 6) {
+            return false; // TLD should be between 2 to 6 characters
+        }
+
+        // Valid characters in TLD
+        for (char c : tld.toCharArray()) {
+            if (!Character.isLetter(c)) {
+                return false; // TLD must only contain letters
+            }
+        }
+
+        return true; // TLD is valid
+    }
+}
