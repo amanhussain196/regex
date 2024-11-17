@@ -1,0 +1,45 @@
+import java.util.Scanner;
+
+public class IndianPhoneNumberValidator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Input for phone number
+        System.out.print("Enter an Indian mobile number: ");
+        String phoneNumber = scanner.nextLine();
+        
+        // Validate the phone number
+        boolean isValid = validatePhoneNumber(phoneNumber);
+        System.out.println("Phone Number Valid: " + isValid);
+
+        scanner.close();
+    }
+
+    // Method to validate Indian mobile numbers
+    private static boolean validatePhoneNumber(String phoneNumber) {
+        // Check for null or empty string
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return false;
+        }
+
+        // Check the length of the number
+        if (phoneNumber.length() != 10) {
+            return false; // Must be exactly 10 digits
+        }
+
+        // Check if all characters are digits
+        for (char c : phoneNumber.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false; // Must be numeric
+            }
+        }
+
+        // Check if the first digit is 7, 8, or 9
+        char firstDigit = phoneNumber.charAt(0);
+        if (firstDigit != '7' && firstDigit != '8' && firstDigit != '9') {
+            return false; // Invalid starting digit for mobile number
+        }
+
+        return true; // All checks passed, phone number is valid
+    }
+}
